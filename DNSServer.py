@@ -26,7 +26,9 @@ def generate_aes_key(password, salt):
         salt=salt,
         length=32
     )
-    key = kdf.derive(password.encode('utf-8'))
+    if not isinstance(password, bytes):
+        password = password.encode('utf-8')
+    key = kdf.derive(password)
     key = base64.urlsafe_b64encode(key)
     return key
 
@@ -34,7 +36,9 @@ def generate_aes_key(password, salt):
 def encrypt_with_aes(input_string, password, salt):
     key = generate_aes_key(password, salt)
     f = Fernet(key)
-    encrypted_data = f.encrypt(input_string.encode('utf-8')) #call the Fernet encrypt method
+    if not isinstance(input_string, bytes):
+        input_string = input_string.encode('utf-8')
+    encrypted_data = f.encrypt(input_string) #call the Fernet encrypt method
     return encrypted_data    
 
 def decrypt_with_aes(encrypted_data, password, salt):
